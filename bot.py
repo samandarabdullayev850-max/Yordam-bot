@@ -1,4 +1,17 @@
-import os
+SHEETS_URL = "https://script.google.com/macros/s/AKfycbzRnJbIKgsjpTb8SfNv6nJ4yfzmVoyEg4pdVpQhzqavsx6bNNYrws84FXFB7bEbNEcc1g/exec"
+
+def save_user(user_id, ism, bulim="", xizmat=""):
+    try:
+        from datetime import datetime
+        requests.post(SHEETS_URL, json={
+            "user_id": str(user_id),
+            "ism": ism,
+            "sana": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "bulim": bulim,
+            "xizmat": xizmat
+        })
+    except:
+        pass
 import requests
 from flask import Flask, request
 
