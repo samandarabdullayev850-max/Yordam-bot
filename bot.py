@@ -66,9 +66,13 @@ def bosh_menyu(chat_id, lang):
     }.get(lang, ("👤 Siz kimSiz?", [["👨‍🎓 Talaba", "talaba"], ["👩‍🏫 O'qituvchi", "oquvchi"], ["💼 Ofis xodimi", "ofis"], ["🌟 Hamma uchun", "hamma"]]))
     send(chat_id, t[0], [[{"text": i[0], "callback_data": i[1]}] for i in t[1]])
 
-def ortga_kb(lang):
-    t = {"uz": ["◀️ Ortga", "🏠 Bosh menyu"], "ru": ["◀️ Назад", "🏠 Главное меню"], "en": ["◀️ Back", "🏠 Main menu"]}.get(lang, ["◀️ Ortga", "🏠 Bosh menyu"])
-    return [[{"text": t[0], "callback_data": "start"}, {"text": t[1], "callback_data": "start"}]] 
+def ortga_kb(lang, qayerga="start"):
+    t = {
+        "uz": ["◀️ Ortga", "🏠 Bosh menyu"],
+        "ru": ["◀️ Назад", "🏠 Главное меню"],
+        "en": ["◀️ Back", "🏠 Main menu"]
+    }.get(lang, ["◀️ Ortga", "🏠 Bosh menyu"])
+    return [[{"text": t[0], "callback_data": qayerga}, {"text": t[1], "callback_data": "start"}]] 
 def talaba_menu(chat_id, lang):
     menus = {
         "uz": ("👨‍🎓 Talaba bo'limi", [
