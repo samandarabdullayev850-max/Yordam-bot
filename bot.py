@@ -307,7 +307,8 @@ def webhook():
             f"👥 Jami foydalanuvchilar: <b>{jami}</b>\n"
             f"🆕 Bugun qo'shilganlar: <b>{bugungi}</b>\n\n"
             f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
-            ) elif text.startswith("/broadcast ") and str(user_id) == ADMIN:
+            ) 
+    elif text.startswith("/broadcast ") and str(user_id) == ADMIN:
         xabar = text[11:]
         conn = sqlite3.connect("users.db")
         c = conn.cursor()
