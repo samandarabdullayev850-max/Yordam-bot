@@ -307,7 +307,21 @@ def webhook():
             f"👥 Jami foydalanuvchilar: <b>{jami}</b>\n"
             f"🆕 Bugun qo'shilganlar: <b>{bugungi}</b>\n\n"
             f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
-            )
+            ) elif text.startswith("/broadcast ") and str(user_id) == ADMIN:
+        xabar = text[11:]
+        conn = sqlite3.connect("users.db")
+        c = conn.cursor()
+        c.execute("SELECT user_id FROM users")
+        users = c.fetchall()
+        conn.close()
+        yuborildi = 0
+        for u in users:
+            try:
+                send(u[0], xabar)
+                yuborildi += 1
+            except:
+                pass
+        send(chat_id, f"✅ {yuborildi} ta foydalanuvchiga yuborildi!")
     elif text.startswith("/reklama ") and str(user_id) == ADMIN:
         send(chat_id, "Reklama yuborilmoqda...")
     else:
