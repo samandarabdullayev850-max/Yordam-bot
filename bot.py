@@ -1,8 +1,8 @@
 import os
 import requests
 from flask import Flask, request
-from datetime 
-import datetime
+from datetime import datetime
+import sqlite3
 
 TOKEN = "8381516564:AAHBCKfeR7wy3SQf6ntwsSUVAS1gsvZ1R0o"
 GROQ = "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"
@@ -11,7 +11,8 @@ SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qx
 OBUNA_MAJBURIY = False
 CHANNEL = "@sizning_kanal"
 
-app = Flask(__name__) init_db()
+app = Flask(__name__) 
+init_db()
 user_lang = {}
 user_xizmat = {}
 
