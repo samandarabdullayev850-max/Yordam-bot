@@ -26,7 +26,15 @@ def ask(text, role):
         json={"model": "llama-3.3-70b-versatile", "max_tokens": 2048,
               "messages": [{"role": "system", "content": role}, {"role": "user", "content": text}]}, timeout=30)
     return r.json()["choices"][0]["message"]["content"]
-
+def send_image(chat_id, prompt):
+    try:
+        clean = prompt.replace(" ", "%20").replace("\n", "")
+        url = f"https://image.pollinations.ai/prompt/{clean}?width=512&height=512&nologo=true"
+        requests.post(f"https://api.telegram.org/bot{TOKEN}/sendPhoto",
+            json={"chat_id": chat_id, "photo": url, "caption": "Rasm tayyor!"},
+            timeout=30)
+    except:
+        send(chat_id, "Rasm yaratishda xatolik. Qayta urining.")
 def send(chat_id, text, kb=None):
     data = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
     if kb:
@@ -248,14 +256,20 @@ def webhook():
     elif text.startswith("/reklama ") and str(user_id) == ADMIN:
         send(chat_id, "Reklama yuborilmoqda...")
     else:
-        loading = {"uz": "Tayyorlanmoqda...", "ru": "Подготовка...", "en": "Preparing..."}.get(lang, "Tayyorlanmoqda...")
-        send(chat_id, loading)
-        xizmat = user_xizmat.get(user_id, "savol")
-        role = ROLLAR.get(lang, ROLLAR["uz"]).get(xizmat, "Sen aqlli yordamchisan.")
-        javob = ask(text, role)
-        menyu_text = {"uz": "Bosh menyu", "ru": "Главное меню", "en": "Main menu"}.get(lang, "Bosh menyu")
-        send(chat_id, javob, [[{"text": menyu_text, "callback_data": "start"}]])
-
+            loading = {"uz": "Tayyorlanmoqda...", "ru": "Podgotovka...", "en": "Preparing..."}.get(lang, "Tayyorlanmoqda...")
+            send(chat_id, loading)
+            xizmat = user_xizmat.get(user_id, "savol")
+            if xizmat == "rasm":
+                clean = text.replace(" ", "%20").replace("\n", "")
+                url = f"https://image.pollinations.ai/prompt/{clean}?width=512&height=512&nologo=true"
+                requests.post(f"https://api.telegram.org/bot{TOKEN}/sendPhoto", json={"chat_id": chat_id, "photo": url, "caption": "Rasm tayyor!"}, timeout=30)
+                menyu_text = {"uz": "Bosh menyu", "ru": "Glavnoe menyu", "en": "Main menu"}.get(lang, "Bosh menyu")
+                send(chat_id, "Yana rasm yaratish uchun tavsif yozing!", [[{"text": menyu_text, "callback_data": "start"}]])
+            else:
+                role = ROLLAR.get(lang, ROLLAR["uz"]).get(xizmat, "Sen aqlli yordamchisan.")
+                javob = ask(text, role)
+                menyu_text = {"uz": "Bosh menyu", "ru": "Glavnoe menyu", "en": "Main menu"}.get(lang, "Bosh menyu")
+                send(chat_id, javob, [[{"text": menyu_text, "callback_data": "start"}]])
     return "ok"
 
 if __name__ == "__main__":
