@@ -1,7 +1,8 @@
 import os
 import requests
 from flask import Flask, request
-from datetime import datetime
+from datetime 
+import datetime
 
 TOKEN = "8381516564:AAHBCKfeR7wy3SQf6ntwsSUVAS1gsvZ1R0o"
 GROQ = "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"
@@ -10,15 +11,46 @@ SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qx
 OBUNA_MAJBURIY = False
 CHANNEL = "@sizning_kanal"
 
-app = Flask(__name__)
+app = Flask(__name__) init_db()
 user_lang = {}
 user_xizmat = {}
 
-def save_user(user_id, ism, bulim="", xizmat=""):
-    try:
-        requests.post(SHEETS_URL, json={"user_id": str(user_id), "ism": ism, "sana": datetime.now().strftime("%Y-%m-%d %H:%M"), "bulim": bulim, "xizmat": xizmat}, timeout=3)
-    except:
-        pass
+def init_db():
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY,
+            ism TEXT,
+            sana TEXT,
+            bolim TEXT,
+            xizmat TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def save_user(user_id, ism, bolim="", xizmat=""):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    sana = datetime.now().strftime("%Y-%m-%d")
+    c.execute("INSERT OR IGNORE INTO users (user_id, ism, sana, bolim, xizmat) VALUES (?, ?, ?, ?, ?)",
+              (user_id, ism, sana, bolim, xizmat))
+    conn.commit()
+    conn.close()
+
+def get_stats():
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM users")
+    jami = c.fetchone()[0]
+    bugun = datetime.now().strftime("%Y-%m-%d")
+    c.execute("SELECT COUNT(*) FROM users WHERE sana = ?", (bugun,))
+    bugungi = c.fetchone()[0]
+    c.execute("SELECT bolim, COUNT(*) FROM users GROUP BY bolim")
+    bolimlar = c.fetchall()
+    conn.close()
+    return jami, bugungi, bolimlar
 
 def ask(text, role):
     r = requests.post("https://api.groq.com/openai/v1/chat/completions",
@@ -265,7 +297,14 @@ def webhook():
         save_user(user_id, ism)
         til_menyusi(chat_id)
     elif text == "/stats" and str(user_id) == ADMIN:
-        send(chat_id, "Statistika: docs.google.com/spreadsheets/d/1emuCXNa2pgs6LuzgNTiq1DYHLkzuQAXLhSHVgfiHoR0")
+    jami, bugungi, bolimlar = get_stats()
+    bolim_text = "\n".join([f"  • {b[0] or 'Noma\\'lum'}: {b[1]} ta" for b in bolimlar])
+    send(chat_id,
+        f"📊 <b>Bot Statistikasi</b>\n\n"
+        f"👥 Jami foydalanuvchilar: <b>{jami}</b>\n"
+        f"🆕 Bugun qo'shilganlar: <b>{bugungi}</b>\n\n"
+        f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
+        )
     elif text.startswith("/reklama ") and str(user_id) == ADMIN:
         send(chat_id, "Reklama yuborilmoqda...")
     else:
