@@ -298,14 +298,14 @@ def webhook():
         save_user(user_id, ism)
         til_menyusi(chat_id)
     elif text == "/stats" and str(user_id) == ADMIN:
-    jami, bugungi, bolimlar = get_stats()
-    bolim_text = "\n".join([f"  • {b[0] or 'Noma\\'lum'}: {b[1]} ta" for b in bolimlar])
-    send(chat_id,
-        f"📊 <b>Bot Statistikasi</b>\n\n"
-        f"👥 Jami foydalanuvchilar: <b>{jami}</b>\n"
-        f"🆕 Bugun qo'shilganlar: <b>{bugungi}</b>\n\n"
-        f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
-        )
+        jami, bugungi, bolimlar = get_stats()
+        bolim_text = "\n".join([f"  • {b[0] or 'Noma\\'lum'}: {b[1]} ta" for b in bolimlar])
+        send(chat_id,
+            f"📊 <b>Bot Statistikasi</b>\n\n"
+            f"👥 Jami foydalanuvchilar: <b>{jami}</b>\n"
+            f"🆕 Bugun qo'shilganlar: <b>{bugungi}</b>\n\n"
+            f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
+            )
     elif text.startswith("/reklama ") and str(user_id) == ADMIN:
         send(chat_id, "Reklama yuborilmoqda...")
     else:
