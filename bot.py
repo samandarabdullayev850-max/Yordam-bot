@@ -12,7 +12,7 @@ OBUNA_MAJBURIY = False
 CHANNEL = "@sizning_kanal"
 
 app = Flask(__name__) 
-init_db()
+
 user_lang = {}
 user_xizmat = {}
 
@@ -29,7 +29,8 @@ def init_db():
         )
     """)
     conn.commit()
-    conn.close()
+    conn.close() 
+    init_db()
 
 def save_user(user_id, ism, bolim="", xizmat=""):
     conn = sqlite3.connect("users.db")
