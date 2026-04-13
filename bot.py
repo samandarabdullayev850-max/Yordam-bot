@@ -31,7 +31,7 @@ def init_db():
     conn.commit()
     conn.close() 
    
-    init_db()
+init_db()
 
 def save_user(user_id, ism, bolim="", xizmat=""):
     conn = sqlite3.connect("users.db")
