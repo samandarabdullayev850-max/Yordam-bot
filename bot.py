@@ -52,111 +52,109 @@ def check_obuna(user_id):
     return status in ["member", "administrator", "creator"]
 
 def til_menyusi(chat_id):
-    send(chat_id, "Tilni tanlang / Choose language / Выберите язык", [[
-        {"text": "O'zbek", "callback_data": "til_uz"},
-        {"text": "Русский", "callback_data": "til_ru"},
-        {"text": "English", "callback_data": "til_en"}
+    send(chat_id, "🌍 Tilni tanlang / Choose language / Выберите язык", [[
+        {"text": "🇺🇿 O'zbek", "callback_data": "til_uz"},
+        {"text": "🇷🇺 Русский", "callback_data": "til_ru"},
+        {"text": "🇬🇧 English", "callback_data": "til_en"}
     ]])
 
 def bosh_menyu(chat_id, lang):
     t = {
-        "uz": ("Siz kimSiz?", [["Talaba", "talaba"], ["O'qituvchi", "oquvchi"], ["Ofis xodimi", "ofis"], ["Hamma uchun", "hamma"]]),
-        "ru": ("Кто вы?", [["Студент", "talaba"], ["Учитель", "oquvchi"], ["Офис", "ofis"], ["Для всех", "hamma"]]),
-        "en": ("Who are you?", [["Student", "talaba"], ["Teacher", "oquvchi"], ["Office", "ofis"], ["For all", "hamma"]])
-    }.get(lang, ("Siz kimSiz?", [["Talaba", "talaba"], ["O'qituvchi", "oquvchi"], ["Ofis xodimi", "ofis"], ["Hamma uchun", "hamma"]]))
+        "uz": ("👤 Siz kimSiz?", [["👨‍🎓 Talaba", "talaba"], ["👩‍🏫 O'qituvchi", "oquvchi"], ["💼 Ofis xodimi", "ofis"], ["🌟 Hamma uchun", "hamma"]]),
+        "ru": ("👤 Кто вы?", [["👨‍🎓 Студент", "talaba"], ["👩‍🏫 Учитель", "oquvchi"], ["💼 Офис", "ofis"], ["🌟 Для всех", "hamma"]]),
+        "en": ("👤 Who are you?", [["👨‍🎓 Student", "talaba"], ["👩‍🏫 Teacher", "oquvchi"], ["💼 Office", "ofis"], ["🌟 For all", "hamma"]])
+    }.get(lang, ("👤 Siz kimSiz?", [["👨‍🎓 Talaba", "talaba"], ["👩‍🏫 O'qituvchi", "oquvchi"], ["💼 Ofis xodimi", "ofis"], ["🌟 Hamma uchun", "hamma"]]))
     send(chat_id, t[0], [[{"text": i[0], "callback_data": i[1]}] for i in t[1]])
 
 def ortga_kb(lang):
-    t = {"uz": ["Ortga", "Bosh menyu"], "ru": ["Назад", "Главное меню"], "en": ["Back", "Main menu"]}.get(lang, ["Ortga", "Bosh menyu"])
-    return [[{"text": t[0], "callback_data": "start"}, {"text": t[1], "callback_data": "start"}]]
-
+    t = {"uz": ["◀️ Ortga", "🏠 Bosh menyu"], "ru": ["◀️ Назад", "🏠 Главное меню"], "en": ["◀️ Back", "🏠 Main menu"]}.get(lang, ["◀️ Ortga", "🏠 Bosh menyu"])
+    return [[{"text": t[0], "callback_data": "start"}, {"text": t[1], "callback_data": "start"}]] 
 def talaba_menu(chat_id, lang):
     menus = {
-        "uz": ("Talaba bolimi", [
-            [{"text": "Referat/Kurs ishi", "callback_data": "s_referat"}, {"text": "Rezyume", "callback_data": "s_rezyume"}],
-            [{"text": "Intervyu", "callback_data": "s_intervyu"}, {"text": "Ariza", "callback_data": "s_ariza"}],
-            [{"text": "Diplom ishi", "callback_data": "s_diplom"}, {"text": "Mavzu tushuntirish", "callback_data": "s_tushuntir"}],
-            [{"text": "Test savollari", "callback_data": "s_testsavol"}, {"text": "Tarjima", "callback_data": "s_tarjima"}],
-            [{"text": "Bosh menyu", "callback_data": "start"}]]),
-        "ru": ("Раздел студента", [
-            [{"text": "Реферат/Курсовая", "callback_data": "s_referat"}, {"text": "Резюме", "callback_data": "s_rezyume"}],
-            [{"text": "Интервью", "callback_data": "s_intervyu"}, {"text": "Заявление", "callback_data": "s_ariza"}],
-            [{"text": "Дипломная работа", "callback_data": "s_diplom"}, {"text": "Объяснить тему", "callback_data": "s_tushuntir"}],
-            [{"text": "Тестовые вопросы", "callback_data": "s_testsavol"}, {"text": "Перевод", "callback_data": "s_tarjima"}],
-            [{"text": "Главное меню", "callback_data": "start"}]]),
-        "en": ("Student section", [
-            [{"text": "Essay/Course work", "callback_data": "s_referat"}, {"text": "Resume", "callback_data": "s_rezyume"}],
-            [{"text": "Interview", "callback_data": "s_intervyu"}, {"text": "Application", "callback_data": "s_ariza"}],
-            [{"text": "Diploma work", "callback_data": "s_diplom"}, {"text": "Explain topic", "callback_data": "s_tushuntir"}],
-            [{"text": "Test questions", "callback_data": "s_testsavol"}, {"text": "Translation", "callback_data": "s_tarjima"}],
-            [{"text": "Main menu", "callback_data": "start"}]])
+        "uz": ("👨‍🎓 Talaba bo'limi", [
+            [{"text": "📝 Referat/Kurs ishi", "callback_data": "s_referat"}, {"text": "📄 Rezyume", "callback_data": "s_rezyume"}],
+            [{"text": "💬 Intervyu", "callback_data": "s_intervyu"}, {"text": "📋 Ariza", "callback_data": "s_ariza"}],
+            [{"text": "📖 Diplom ishi", "callback_data": "s_diplom"}, {"text": "💡 Mavzu tushuntirish", "callback_data": "s_tushuntir"}],
+            [{"text": "🃏 Test savollari", "callback_data": "s_testsavol"}, {"text": "🔤 Tarjima", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Bosh menyu", "callback_data": "start"}]]),
+        "ru": ("👨‍🎓 Раздел студента", [
+            [{"text": "📝 Реферат/Курсовая", "callback_data": "s_referat"}, {"text": "📄 Резюме", "callback_data": "s_rezyume"}],
+            [{"text": "💬 Интервью", "callback_data": "s_intervyu"}, {"text": "📋 Заявление", "callback_data": "s_ariza"}],
+            [{"text": "📖 Дипломная работа", "callback_data": "s_diplom"}, {"text": "💡 Объяснить тему", "callback_data": "s_tushuntir"}],
+            [{"text": "🃏 Тестовые вопросы", "callback_data": "s_testsavol"}, {"text": "🔤 Перевод", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Главное меню", "callback_data": "start"}]]),
+        "en": ("👨‍🎓 Student section", [
+            [{"text": "📝 Essay/Course work", "callback_data": "s_referat"}, {"text": "📄 Resume", "callback_data": "s_rezyume"}],
+            [{"text": "💬 Interview", "callback_data": "s_intervyu"}, {"text": "📋 Application", "callback_data": "s_ariza"}],
+            [{"text": "📖 Diploma work", "callback_data": "s_diplom"}, {"text": "💡 Explain topic", "callback_data": "s_tushuntir"}],
+            [{"text": "🃏 Test questions", "callback_data": "s_testsavol"}, {"text": "🔤 Translation", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Main menu", "callback_data": "start"}]])
     }
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
 
 def oquvchi_menu(chat_id, lang):
     menus = {
-        "uz": ("O'qituvchi bolimi", [
-            [{"text": "Texnologik karta", "callback_data": "s_texkarta"}, {"text": "Test yaratish", "callback_data": "s_test"}],
-            [{"text": "Dars rejasi", "callback_data": "s_darsreja"}, {"text": "Ota-onalarga xat", "callback_data": "s_xat"}],
-            [{"text": "Tavsifnoma", "callback_data": "s_tavsif"}, {"text": "Dars tahlili", "callback_data": "s_tahlil"}],
-            [{"text": "Attestatsiya savollari", "callback_data": "s_attestatsiya"}, {"text": "Tarjima", "callback_data": "s_tarjima"}],
-            [{"text": "Bosh menyu", "callback_data": "start"}]]),
-        "ru": ("Раздел учителя", [
-            [{"text": "Технологическая карта", "callback_data": "s_texkarta"}, {"text": "Создать тест", "callback_data": "s_test"}],
-            [{"text": "План урока", "callback_data": "s_darsreja"}, {"text": "Письмо родителям", "callback_data": "s_xat"}],
-            [{"text": "Характеристика", "callback_data": "s_tavsif"}, {"text": "Анализ урока", "callback_data": "s_tahlil"}],
-            [{"text": "Вопросы аттестации", "callback_data": "s_attestatsiya"}, {"text": "Перевод", "callback_data": "s_tarjima"}],
-            [{"text": "Главное меню", "callback_data": "start"}]]),
-        "en": ("Teacher section", [
-            [{"text": "Technology map", "callback_data": "s_texkarta"}, {"text": "Create test", "callback_data": "s_test"}],
-            [{"text": "Lesson plan", "callback_data": "s_darsreja"}, {"text": "Letter to parents", "callback_data": "s_xat"}],
-            [{"text": "Reference letter", "callback_data": "s_tavsif"}, {"text": "Lesson analysis", "callback_data": "s_tahlil"}],
-            [{"text": "Attestation questions", "callback_data": "s_attestatsiya"}, {"text": "Translation", "callback_data": "s_tarjima"}],
-            [{"text": "Main menu", "callback_data": "start"}]])
+        "uz": ("👩‍🏫 O'qituvchi bo'limi", [
+            [{"text": "📋 Texnologik karta", "callback_data": "s_texkarta"}, {"text": "🎓 Test yaratish", "callback_data": "s_test"}],
+            [{"text": "📊 Dars rejasi", "callback_data": "s_darsreja"}, {"text": "📣 Ota-onalarga xat", "callback_data": "s_xat"}],
+            [{"text": "🏆 Tavsifnoma", "callback_data": "s_tavsif"}, {"text": "📝 Dars tahlili", "callback_data": "s_tahlil"}],
+            [{"text": "🎯 Attestatsiya savollari", "callback_data": "s_attestatsiya"}, {"text": "🔤 Tarjima", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Bosh menyu", "callback_data": "start"}]]),
+        "ru": ("👩‍🏫 Раздел учителя", [
+            [{"text": "📋 Технологическая карта", "callback_data": "s_texkarta"}, {"text": "🎓 Создать тест", "callback_data": "s_test"}],
+            [{"text": "📊 План урока", "callback_data": "s_darsreja"}, {"text": "📣 Письмо родителям", "callback_data": "s_xat"}],
+            [{"text": "🏆 Характеристика", "callback_data": "s_tavsif"}, {"text": "📝 Анализ урока", "callback_data": "s_tahlil"}],
+            [{"text": "🎯 Вопросы аттестации", "callback_data": "s_attestatsiya"}, {"text": "🔤 Перевод", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Главное меню", "callback_data": "start"}]]),
+        "en": ("👩‍🏫 Teacher section", [
+            [{"text": "📋 Technology map", "callback_data": "s_texkarta"}, {"text": "🎓 Create test", "callback_data": "s_test"}],
+            [{"text": "📊 Lesson plan", "callback_data": "s_darsreja"}, {"text": "📣 Letter to parents", "callback_data": "s_xat"}],
+            [{"text": "🏆 Reference letter", "callback_data": "s_tavsif"}, {"text": "📝 Lesson analysis", "callback_data": "s_tahlil"}],
+            [{"text": "🎯 Attestation questions", "callback_data": "s_attestatsiya"}, {"text": "🔤 Translation", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Main menu", "callback_data": "start"}]])
     }
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
 
 def ofis_menu(chat_id, lang):
     menus = {
-        "uz": ("Ofis xodimi bolimi", [
-            [{"text": "Reklama matni", "callback_data": "s_reklama"}, {"text": "Biznes-reja", "callback_data": "s_biznes"}],
-            [{"text": "Mahsulot tavsifi", "callback_data": "s_mahsulot"}, {"text": "Email/Xat", "callback_data": "s_email"}],
-            [{"text": "Ariza", "callback_data": "s_ariza"}, {"text": "Tarjima", "callback_data": "s_tarjima"}],
-            [{"text": "Bosh menyu", "callback_data": "start"}]]),
-        "ru": ("Раздел офиса", [
-            [{"text": "Рекламный текст", "callback_data": "s_reklama"}, {"text": "Бизнес-план", "callback_data": "s_biznes"}],
-            [{"text": "Описание товара", "callback_data": "s_mahsulot"}, {"text": "Email/Письмо", "callback_data": "s_email"}],
-            [{"text": "Заявление", "callback_data": "s_ariza"}, {"text": "Перевод", "callback_data": "s_tarjima"}],
-            [{"text": "Главное меню", "callback_data": "start"}]]),
-        "en": ("Office section", [
-            [{"text": "Ad text", "callback_data": "s_reklama"}, {"text": "Business plan", "callback_data": "s_biznes"}],
-            [{"text": "Product description", "callback_data": "s_mahsulot"}, {"text": "Email/Letter", "callback_data": "s_email"}],
-            [{"text": "Application", "callback_data": "s_ariza"}, {"text": "Translation", "callback_data": "s_tarjima"}],
-            [{"text": "Main menu", "callback_data": "start"}]])
+        "uz": ("💼 Ofis xodimi bo'limi", [
+            [{"text": "📱 Reklama matni", "callback_data": "s_reklama"}, {"text": "📊 Biznes-reja", "callback_data": "s_biznes"}],
+            [{"text": "🛍 Mahsulot tavsifi", "callback_data": "s_mahsulot"}, {"text": "✉️ Email/Xat", "callback_data": "s_email"}],
+            [{"text": "📋 Ariza", "callback_data": "s_ariza"}, {"text": "🔤 Tarjima", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Bosh menyu", "callback_data": "start"}]]),
+        "ru": ("💼 Раздел офиса", [
+            [{"text": "📱 Рекламный текст", "callback_data": "s_reklama"}, {"text": "📊 Бизнес-план", "callback_data": "s_biznes"}],
+            [{"text": "🛍 Описание товара", "callback_data": "s_mahsulot"}, {"text": "✉️ Email/Письмо", "callback_data": "s_email"}],
+            [{"text": "📋 Заявление", "callback_data": "s_ariza"}, {"text": "🔤 Перевод", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Главное меню", "callback_data": "start"}]]),
+        "en": ("💼 Office section", [
+            [{"text": "📱 Ad text", "callback_data": "s_reklama"}, {"text": "📊 Business plan", "callback_data": "s_biznes"}],
+            [{"text": "🛍 Product description", "callback_data": "s_mahsulot"}, {"text": "✉️ Email/Letter", "callback_data": "s_email"}],
+            [{"text": "📋 Application", "callback_data": "s_ariza"}, {"text": "🔤 Translation", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Main menu", "callback_data": "start"}]])
     }
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
 
 def hamma_menu(chat_id, lang):
     menus = {
-        "uz": ("Hamma uchun", [
-            [{"text": "Rasm yaratish", "callback_data": "s_rasm"}, {"text": "Savol-javob", "callback_data": "s_savol"}],
-            [{"text": "Tarjima", "callback_data": "s_tarjima"}],
-            [{"text": "Bosh menyu", "callback_data": "start"}]]),
-        "ru": ("Для всех", [
-            [{"text": "Создать картинку", "callback_data": "s_rasm"}, {"text": "Вопрос-ответ", "callback_data": "s_savol"}],
-            [{"text": "Перевод", "callback_data": "s_tarjima"}],
-            [{"text": "Главное меню", "callback_data": "start"}]]),
-        "en": ("For everyone", [
-            [{"text": "Create image", "callback_data": "s_rasm"}, {"text": "Q&A", "callback_data": "s_savol"}],
-            [{"text": "Translation", "callback_data": "s_tarjima"}],
-            [{"text": "Main menu", "callback_data": "start"}]])
+        "uz": ("🌟 Hamma uchun", [
+            [{"text": "🎨 Rasm yaratish", "callback_data": "s_rasm"}, {"text": "💬 Savol-javob", "callback_data": "s_savol"}],
+            [{"text": "🔤 Tarjima", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Bosh menyu", "callback_data": "start"}]]),
+        "ru": ("🌟 Для всех", [
+            [{"text": "🎨 Создать картинку", "callback_data": "s_rasm"}, {"text": "💬 Вопрос-ответ", "callback_data": "s_savol"}],
+            [{"text": "🔤 Перевод", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Главное меню", "callback_data": "start"}]]),
+        "en": ("🌟 For everyone", [
+            [{"text": "🎨 Create image", "callback_data": "s_rasm"}, {"text": "💬 Q&A", "callback_data": "s_savol"}],
+            [{"text": "🔤 Translation", "callback_data": "s_tarjima"}],
+            [{"text": "🏠 Main menu", "callback_data": "start"}]])
     }
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
-
 SAVOLLAR = {
     "uz": {"referat": "Referat mavzusini yozing:", "rezyume": "Tajriba va konikmalaringizni yozing:", "intervyu": "Qaysi lavozimga intervyu?", "ariza": "Ariza kimga va nima uchun?", "diplom": "Diplom ishi mavzusini yozing:", "tushuntir": "Qaysi mavzuni tushuntirishimni xohlaysiz?", "testsavol": "Qaysi fandan test savollari kerak?", "tarjima": "Matnni yozing qaysi tildan qaysi tilga:", "texkarta": "Dars mavzusi va sinfni yozing:", "test": "Mavzu va nechta savol kerak?", "darsreja": "Dars mavzusi va sinfni yozing:", "xat": "Xat mavzusini yozing:", "tavsif": "Oquvchi ismi va sababini yozing:", "tahlil": "Dars mavzusi va sinfni yozing:", "attestatsiya": "Fan nomi va sinfni yozing:", "reklama": "Mahsulot yoki xizmat haqida yozing:", "biznes": "Biznes goyangizni yozing:", "mahsulot": "Mahsulotingiz haqida yozing:", "email": "Kimga va nima haqida?", "rasm": "Rasm uchun tavsif yozing:", "savol": "Savolingizni yozing:"},
     "ru": {"referat": "Напишите тему реферата:", "rezyume": "Напишите опыт и навыки:", "intervyu": "На какую должность интервью?", "ariza": "Кому и для чего заявление?", "diplom": "Напишите тему дипломной работы:", "tushuntir": "Какую тему объяснить?", "testsavol": "По какому предмету тест?", "tarjima": "Напишите текст и с какого на какой язык:", "texkarta": "Напишите тему урока и класс:", "test": "Тема и количество вопросов?", "darsreja": "Напишите тему урока и класс:", "xat": "Тема письма родителям:", "tavsif": "Имя ученика и причина:", "tahlil": "Напишите тему урока и класс:", "attestatsiya": "Предмет и класс:", "reklama": "О товаре или услуге:", "biznes": "Напишите бизнес-идею:", "mahsulot": "О вашем товаре:", "email": "Кому и о чём письмо?", "rasm": "Опишите картинку:", "savol": "Напишите вопрос:"},
