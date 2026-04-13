@@ -299,7 +299,7 @@ def webhook():
         til_menyusi(chat_id)
     elif text == "/stats" and str(user_id) == ADMIN:
         jami, bugungi, bolimlar = get_stats()
-        bolim_text = "\n".join([f"  • {b[0] or 'Noma\\'lum'}: {b[1]} ta" for b in bolimlar])
+        bolim_text = "\n".join([f"  • {b[0] or 'Noaniq'}: {b[1]} ta" for b in bolimlar])
         send(chat_id,
             f"📊 <b>Bot Statistikasi</b>\n\n"
             f"👥 Jami foydalanuvchilar: <b>{jami}</b>\n"
