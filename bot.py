@@ -232,7 +232,18 @@ def webhook():
             user_xizmat[user_id] = xizmat
             savol = SAVOLLAR.get(lang, SAVOLLAR["uz"]).get(xizmat, "Yozing:")
             save_user(user_id, ism, "", xizmat)
-            send(chat_id, savol, ortga_kb(lang))
+            talaba_xizmatlar = ["referat", "rezyume", "intervyu", "ariza", "diplom", "tushuntir", "testsavol"]
+            oquvchi_xizmatlar = ["texkarta", "test", "darsreja", "xat", "tavsif", "tahlil", "attestatsiya"]
+            ofis_xizmatlar = ["reklama", "biznes", "mahsulot", "email"]
+            if xizmat in talaba_xizmatlar:
+                qayerga = "talaba"
+            elif xizmat in oquvchi_xizmatlar:
+                qayerga = "oquvchi"
+            elif xizmat in ofis_xizmatlar:
+                qayerga = "ofis"
+            else:
+                qayerga = "hamma"
+            send(chat_id, savol, ortga_kb(lang, qayerga))
             return "ok"
 
         return "ok"
