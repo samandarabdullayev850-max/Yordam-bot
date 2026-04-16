@@ -5,7 +5,7 @@ from datetime import datetime
 import sqlite3
 
 TOKEN = "8381516564:AAHBCKfeR7wy3SQf6ntwsSUVAS1gsvZ1R0o"
-GROQ = "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"
+GEMINI="AQ.Ab8RN6Ls8Cs6pfoQnc7wmV_nPQQ0TPtOc52NDQlT9tgIMKcpQA"
 ADMIN = "8726418671"
 SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qxHKpfie4emgXh_tmLGItmrFUYTET5FokrSBCw4b6nQ7g/exec"
 OBUNA_MAJBURIY = False
@@ -41,7 +41,12 @@ def save_user(user_id, ism, bolim="", xizmat=""):
               (user_id, ism, sana, bolim, xizmat))
     conn.commit()
     conn.close()
-
+def ask(text, role):
+    import google.generativeai as genai
+    genai.configure(api_key=GEMINI)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(role + "\n\n" + text)
+    return response.text
 def get_stats():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -55,12 +60,6 @@ def get_stats():
     conn.close()
     return jami, bugungi, bolimlar
 
-def ask(text, role):
-    r = requests.post("https://api.groq.com/openai/v1/chat/completions",
-        headers={"Authorization": "Bearer " + GROQ},
-        json={"model": "llama-3.3-70b-versatile", "max_tokens": 2048,
-              "messages": [{"role": "system", "content": role}, {"role": "user", "content": text}]}, timeout=30)
-    return r.json()["choices"][0]["message"]["content"]
 def send_image(chat_id, prompt):
     try:
         clean = prompt.replace(" ", "%20").replace("\n", "")
