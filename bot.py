@@ -5,7 +5,7 @@ from datetime import datetime
 import sqlite3
 
 TOKEN = "8381516564:AAHBCKfeR7wy3SQf6ntwsSUVAS1gsvZ1R0o"
-GROQ = "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"
+GROQ = "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"
 ADMIN = "8726418671"
 SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qxHKpfie4emgXh_tmLGItmrFUYTET5FokrSBCw4b6nQ7g/exec"
 OBUNA_MAJBURIY = False
