@@ -44,7 +44,7 @@ def save_user(user_id, ism, bolim="", xizmat=""):
     conn.close()
 def ask(text, role):
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         response = model.generate_content(role + "\n\n" + text)
         return response.text
     except Exception as e:
