@@ -43,8 +43,6 @@ def save_user(user_id, ism, bolim="", xizmat=""):
     conn.commit()
     conn.close()
 def ask(text, role):
-    import google.generativeai as genai
-    genai.configure(api_key=GEMINI)
     model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(role + "\n\n" + text)
     return response.text
