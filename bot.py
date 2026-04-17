@@ -43,9 +43,13 @@ def save_user(user_id, ism, bolim="", xizmat=""):
     conn.commit()
     conn.close()
 def ask(text, role):
-    model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(role + "\n\n" + text)
-    return response.text
+    try:
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(role + "\n\n" + text)
+        return response.text
+    except Exception as e:
+        print(f"GEMINI XATO: {e}")
+        return f"Xato: {str(e)}"
 def get_stats():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
