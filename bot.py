@@ -3,10 +3,8 @@ import requests
 from flask import Flask, request
 from datetime import datetime
 import sqlite3
-import google.generativeai as genai
 TOKEN = "8381516564:AAHBCKfeR7wy3SQf6ntwsSUVAS1gsvZ1R0o"
-GEMINI ="AIzaSyDgjNkEpv4dvfpVK8Q4HSxbeIyakb4dPTw"
-genai.configure(api_key=GEMINI)
+GROQ = "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"
 ADMIN = "8726418671"
 SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qxHKpfie4emgXh_tmLGItmrFUYTET5FokrSBCw4b6nQ7g/exec"
 OBUNA_MAJBURIY = False
@@ -44,12 +42,14 @@ def save_user(user_id, ism, bolim="", xizmat=""):
     conn.close()
 def ask(text, role):
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(role + "\n\n" + text)
-        return response.text
+        r = requests.post("https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": "Bearer " + GROQ},
+            json={"model": "llama-3.3-70b-versatile", "max_tokens": 2048,
+                  "messages": [{"role": "system", "content": role}, {"role": "user", "content": text}]}, timeout=60)
+        return r.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        print(f"GEMINI XATO: {e}")
-        return f"Xato: {str(e)}"
+        print(f"GROQ XATO: {e}")
+        return "Xatolik yuz berdi. Qayta urinib ko'ring."
 def get_stats():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
