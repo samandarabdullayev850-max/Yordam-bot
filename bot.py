@@ -4,9 +4,9 @@ from flask import Flask, request
 from datetime import datetime
 import sqlite3
 import google.generativeai as genai
-genai.configure(api_key=GEMINI)
 TOKEN = "8381516564:AAHBCKfeR7wy3SQf6ntwsSUVAS1gsvZ1R0o"
 GEMINI ="AQ.Ab8RN6Ls8Cs6pfoQnc7wmV_nPQQ0TPtOc52NDQlT9tgIMKcpQA"
+genai.configure(api_key=GEMINI)
 ADMIN = "8726418671"
 SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qxHKpfie4emgXh_tmLGItmrFUYTET5FokrSBCw4b6nQ7g/exec"
 OBUNA_MAJBURIY = False
