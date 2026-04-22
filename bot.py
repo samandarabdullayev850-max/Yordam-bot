@@ -8,7 +8,7 @@ GROQ = "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"
 ADMIN = "8726418671"
 SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qxHKpfie4emgXh_tmLGItmrFUYTET5FokrSBCw4b6nQ7g/exec"
 OBUNA_MAJBURIY = False
-CHANNEL = "@sizning_kanal"
+CHANNEL = "https://www.instagram.com/samandar_botdev?igsh=MW5wOHd0b2d3bjl6"
 
 app = Flask(__name__) 
 
