@@ -4,7 +4,7 @@ from flask import Flask, request
 from datetime import datetime
 import sqlite3
 TOKEN = "8381516564:AAHBCKfeR7wy3SQf6ntwsSUVAS1gsvZ1R0o"
-GROQ = "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"
+GROQ = "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"
 ADMIN = "8726418671"
 SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qxHKpfie4emgXh_tmLGItmrFUYTET5FokrSBCw4b6nQ7g/exec"
 OBUNA_MAJBURIY = False
