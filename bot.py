@@ -48,7 +48,9 @@ def ask(text, role):
                   "messages": [{"role": "system", "content": role}, {"role": "user", "content": text}]}, timeout=60)
         return r.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        print(f"GROQ XATO: {e}")
+        # Adminga xabar yuborish
+        requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage",
+            json={"chat_id": ADMIN, "text": f"⚠️ GROQ API xato!\n\n{str(e)}\n\nKalitni almashtiring!"})
         return "Xatolik yuz berdi. Qayta urinib ko'ring."
 def get_stats():
     conn = sqlite3.connect("users.db")
