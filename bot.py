@@ -33,11 +33,17 @@ def init_db():
 init_db()
 
 def save_user(user_id, ism, bolim="", xizmat=""):
+def save_user(user_id, ism, bolim="", xizmat=""):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
     sana = datetime.now().strftime("%Y-%m-%d")
-    c.execute("INSERT OR IGNORE INTO users (user_id, ism, sana, bolim, xizmat) VALUES (?, ?, ?, ?, ?)",
-              (user_id, ism, sana, bolim, xizmat))
+    c.execute("""
+        INSERT INTO users (user_id, ism, sana, bolim, xizmat) 
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(user_id) DO UPDATE SET
+        ism=excluded.ism,
+        sana=excluded.sana
+    """, (user_id, ism, sana, bolim, xizmat))
     conn.commit()
     conn.close()
 def ask(text, role):
@@ -314,20 +320,21 @@ def webhook():
             f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
             ) 
     elif text.startswith("/broadcast ") and str(user_id) == ADMIN:
-        xabar = text[11:]
-        conn = sqlite3.connect("users.db")
-        c = conn.cursor()
-        c.execute("SELECT user_id FROM users")
-        users = c.fetchall()
-        conn.close()
-        yuborildi = 0
-        for u in users:
-            try:
-                send(u[0], xabar)
-                yuborildi += 1
-            except:
-                pass
-        send(chat_id, f"✅ {yuborildi} ta foydalanuvchiga yuborildi!")
+    xabar = text[11:]
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT user_id FROM users")
+    users = c.fetchall()
+    conn.close()
+    yuborildi = 0
+    xato = 0
+    for u in users:
+        try:
+            send(int(u[0]), xabar)
+            yuborildi += 1
+        except:
+            xato += 1
+    send(chat_id, f"✅ {yuborildi} ta foydalanuvchiga yuborildi!\n❌ {xato} ta xato!")
     elif text.startswith("/reklama ") and str(user_id) == ADMIN:
         send(chat_id, "Reklama yuborilmoqda...")
     else:
