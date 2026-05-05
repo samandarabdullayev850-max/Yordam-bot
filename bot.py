@@ -16,11 +16,11 @@ user_lang = {}
 user_xizmat = {}
 
 def init_db():
-    conn = sqlite3.connect("users.db")
+    conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id INTEGER PRIMARY KEY,
+            user_id BIGINT PRIMARY KEY,
             ism TEXT,
             sana TEXT,
             bolim TEXT,
@@ -28,21 +28,21 @@ def init_db():
         )
     """)
     conn.commit()
-    conn.close() 
+    conn.close()
    
 init_db()
 
 def save_user(user_id, ism, bolim="", xizmat=""):
 def save_user(user_id, ism, bolim="", xizmat=""):
-    conn = sqlite3.connect("users.db")
+    conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     sana = datetime.now().strftime("%Y-%m-%d")
     c.execute("""
         INSERT INTO users (user_id, ism, sana, bolim, xizmat) 
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT(user_id) DO UPDATE SET
-        ism=excluded.ism,
-        sana=excluded.sana
+        ism=EXCLUDED.ism,
+        sana=EXCLUDED.sana
     """, (user_id, ism, sana, bolim, xizmat))
     conn.commit()
     conn.close()
@@ -59,12 +59,13 @@ def ask(text, role):
             json={"chat_id": ADMIN, "text": f"⚠️ GROQ API xato!\n\n{str(e)}\n\nKalitni almashtiring!"})
         return "Xatolik yuz berdi. Qayta urinib ko'ring."
 def get_stats():
-    conn = sqlite3.connect("users.db")
+def get_stats():
+    conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     c.execute("SELECT COUNT(*) FROM users")
     jami = c.fetchone()[0]
     bugun = datetime.now().strftime("%Y-%m-%d")
-    c.execute("SELECT COUNT(*) FROM users WHERE sana = ?", (bugun,))
+    c.execute("SELECT COUNT(*) FROM users WHERE sana = %s", (bugun,))
     bugungi = c.fetchone()[0]
     c.execute("SELECT bolim, COUNT(*) FROM users GROUP BY bolim")
     bolimlar = c.fetchall()
@@ -319,9 +320,9 @@ def webhook():
             f"🆕 Bugun qo'shilganlar: <b>{bugungi}</b>\n\n"
             f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
             ) 
-    elif text.startswith("/broadcast ") and str(user_id) == ADMIN:
+   elif text.startswith("/broadcast ") and str(user_id) == ADMIN:
     xabar = text[11:]
-    conn = sqlite3.connect("users.db")
+    conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     c.execute("SELECT user_id FROM users")
     users = c.fetchall()
