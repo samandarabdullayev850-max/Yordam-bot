@@ -3,6 +3,7 @@ import requests
 from flask import Flask, request
 from datetime import datetime
 import psycopg2
+
 TOKEN = "8381516564:AAFz0fohy1q7R7QNTKyfTC8tA9GXydzJ3yU"
 DATABASE_URL = os.environ.get("DATABASE_URL")
 GROQ = "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"
@@ -11,10 +12,11 @@ SHEETS_URL = "https://script.google.com/macros/s/AKfycbyqCLNmhpZ_4-7J9-d6Jt3s6qx
 OBUNA_MAJBURIY = False
 CHANNEL = "https://www.instagram.com/samandar_botdev?igsh=MW5wOHd0b2d3bjl6"
 
-app = Flask(__name__) 
+app = Flask(__name__)
 
 user_lang = {}
 user_xizmat = {}
+
 
 def init_db():
     conn = psycopg2.connect(DATABASE_URL)
@@ -30,15 +32,17 @@ def init_db():
     """)
     conn.commit()
     conn.close()
-   
+
+
 init_db()
+
 
 def save_user(user_id, ism, bolim="", xizmat=""):
     conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     sana = datetime.now().strftime("%Y-%m-%d")
     c.execute("""
-        INSERT INTO users (user_id, ism, sana, bolim, xizmat) 
+        INSERT INTO users (user_id, ism, sana, bolim, xizmat)
         VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT(user_id) DO UPDATE SET
         ism=EXCLUDED.ism,
@@ -46,18 +50,22 @@ def save_user(user_id, ism, bolim="", xizmat=""):
     """, (user_id, ism, sana, bolim, xizmat))
     conn.commit()
     conn.close()
+
+
 def ask(text, role):
     try:
         r = requests.post("https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization": "Bearer " + GROQ},
             json={"model": "llama-3.3-70b-versatile", "max_tokens": 2048,
-                  "messages": [{"role": "system", "content": role}, {"role": "user", "content": text}]}, timeout=60)
+                  "messages": [{"role": "system", "content": role}, {"role": "user", "content": text}]},
+            timeout=60)
         return r.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        # Adminga xabar yuborish
         requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage",
             json={"chat_id": ADMIN, "text": f"⚠️ GROQ API xato!\n\n{str(e)}\n\nKalitni almashtiring!"})
         return "Xatolik yuz berdi. Qayta urinib ko'ring."
+
+
 def get_stats():
     conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
@@ -71,6 +79,7 @@ def get_stats():
     conn.close()
     return jami, bugungi, bolimlar
 
+
 def send_image(chat_id, prompt):
     try:
         clean = prompt.replace(" ", "%20").replace("\n", "")
@@ -80,21 +89,28 @@ def send_image(chat_id, prompt):
             timeout=30)
     except:
         send(chat_id, "Rasm yaratishda xatolik. Qayta urining.")
+
+
 def send(chat_id, text, kb=None):
     data = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
     if kb:
         data["reply_markup"] = {"inline_keyboard": kb}
     requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json=data, timeout=10)
 
+
 def answer_cb(cb_id):
-    requests.post(f"https://api.telegram.org/bot{TOKEN}/answerCallbackQuery", json={"callback_query_id": cb_id}, timeout=5)
+    requests.post(f"https://api.telegram.org/bot{TOKEN}/answerCallbackQuery",
+        json={"callback_query_id": cb_id}, timeout=5)
+
 
 def check_obuna(user_id):
     if not OBUNA_MAJBURIY:
         return True
-    r = requests.get(f"https://api.telegram.org/bot{TOKEN}/getChatMember", params={"chat_id": CHANNEL, "user_id": user_id}, timeout=5)
+    r = requests.get(f"https://api.telegram.org/bot{TOKEN}/getChatMember",
+        params={"chat_id": CHANNEL, "user_id": user_id}, timeout=5)
     status = r.json().get("result", {}).get("status", "")
     return status in ["member", "administrator", "creator"]
+
 
 def til_menyusi(chat_id):
     send(chat_id, "🌍 Tilni tanlang / Choose language / Выберите язык", [[
@@ -102,6 +118,7 @@ def til_menyusi(chat_id):
         {"text": "🇷🇺 Русский", "callback_data": "til_ru"},
         {"text": "🇬🇧 English", "callback_data": "til_en"}
     ]])
+
 
 def bosh_menyu(chat_id, lang):
     t = {
@@ -111,13 +128,16 @@ def bosh_menyu(chat_id, lang):
     }.get(lang, ("👤 Siz kimSiz?", [["👨‍🎓 Talaba", "talaba"], ["👩‍🏫 O'qituvchi", "oquvchi"], ["💼 Ofis xodimi", "ofis"], ["🌟 Hamma uchun", "hamma"]]))
     send(chat_id, t[0], [[{"text": i[0], "callback_data": i[1]}] for i in t[1]])
 
+
 def ortga_kb(lang, qayerga="start"):
     t = {
         "uz": ["◀️ Ortga", "🏠 Bosh menyu"],
         "ru": ["◀️ Назад", "🏠 Главное меню"],
         "en": ["◀️ Back", "🏠 Main menu"]
     }.get(lang, ["◀️ Ortga", "🏠 Bosh menyu"])
-    return [[{"text": t[0], "callback_data": qayerga}, {"text": t[1], "callback_data": "start"}]] 
+    return [[{"text": t[0], "callback_data": qayerga}, {"text": t[1], "callback_data": "start"}]]
+
+
 def talaba_menu(chat_id, lang):
     menus = {
         "uz": ("👨‍🎓 Talaba bo'limi", [
@@ -141,6 +161,7 @@ def talaba_menu(chat_id, lang):
     }
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
+
 
 def oquvchi_menu(chat_id, lang):
     menus = {
@@ -166,6 +187,7 @@ def oquvchi_menu(chat_id, lang):
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
 
+
 def ofis_menu(chat_id, lang):
     menus = {
         "uz": ("💼 Ofis xodimi bo'limi", [
@@ -187,6 +209,7 @@ def ofis_menu(chat_id, lang):
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
 
+
 def hamma_menu(chat_id, lang):
     menus = {
         "uz": ("🌟 Hamma uchun", [
@@ -204,6 +227,8 @@ def hamma_menu(chat_id, lang):
     }
     m = menus.get(lang, menus["uz"])
     send(chat_id, m[0], m[1])
+
+
 SAVOLLAR = {
     "uz": {"referat": "Referat mavzusini yozing:", "rezyume": "Tajriba va konikmalaringizni yozing:", "intervyu": "Qaysi lavozimga intervyu?", "ariza": "Ariza kimga va nima uchun?", "diplom": "Diplom ishi mavzusini yozing:", "tushuntir": "Qaysi mavzuni tushuntirishimni xohlaysiz?", "testsavol": "Qaysi fandan test savollari kerak?", "tarjima": "Matnni yozing qaysi tildan qaysi tilga:", "texkarta": "Dars mavzusi va sinfni yozing:", "test": "Mavzu va nechta savol kerak?", "darsreja": "Dars mavzusi va sinfni yozing:", "xat": "Xat mavzusini yozing:", "tavsif": "Oquvchi ismi va sababini yozing:", "tahlil": "Dars mavzusi va sinfni yozing:", "attestatsiya": "Fan nomi va sinfni yozing:", "reklama": "Mahsulot yoki xizmat haqida yozing:", "biznes": "Biznes goyangizni yozing:", "mahsulot": "Mahsulotingiz haqida yozing:", "email": "Kimga va nima haqida?", "rasm": "Rasm uchun tavsif yozing:", "savol": "Savolingizni yozing:"},
     "ru": {"referat": "Напишите тему реферата:", "rezyume": "Напишите опыт и навыки:", "intervyu": "На какую должность интервью?", "ariza": "Кому и для чего заявление?", "diplom": "Напишите тему дипломной работы:", "tushuntir": "Какую тему объяснить?", "testsavol": "По какому предмету тест?", "tarjima": "Напишите текст и с какого на какой язык:", "texkarta": "Напишите тему урока и класс:", "test": "Тема и количество вопросов?", "darsreja": "Напишите тему урока и класс:", "xat": "Тема письма родителям:", "tavsif": "Имя ученика и причина:", "tahlil": "Напишите тему урока и класс:", "attestatsiya": "Предмет и класс:", "reklama": "О товаре или услуге:", "biznes": "Напишите бизнес-идею:", "mahsulot": "О вашем товаре:", "email": "Кому и о чём письмо?", "rasm": "Опишите картинку:", "savol": "Напишите вопрос:"},
@@ -213,148 +238,4 @@ SAVOLLAR = {
 ROLLAR = {
     "uz": {"referat": "Sen referat yozuvchi mutaxasssissan. Tolik sifatli referat yoz. Kirish asosiy qism va xulosa bolsin. OZBEKCHA yoz.", "rezyume": "Sen professional rezyume yozuvchisan. Chiroyli rezyume tuz. OZBEKCHA yoz.", "intervyu": "Sen intervyuga tayyorgarlik mutaxasssissan. Savollar va javoblarni yoz. OZBEKCHA yoz.", "ariza": "Sen rasmiy hujjatlar mutaxasssissan. Togri rasmiy ariza yoz. OZBEKCHA yoz.", "diplom": "Sen diplom ishi mutaxasssissan. Diplom ishiga yordam ber. OZBEKCHA yoz.", "tushuntir": "Sen tajribali oquvchisan. Mavzuni oddiy va tushunarli tushuntir. OZBEKCHA yoz.", "testsavol": "Sen test tuzuvchisan. 10 ta savol va 4 ta javob varianti tuz. OZBEKCHA yoz.", "tarjima": "Sen professional tarjimonsan. Matnni aniq tarjima qil.", "texkarta": "Sen tajribali oquvchisan. Tolik texnologik karta tuz. OZBEKCHA yoz.", "test": "Sen test tuzuvchisan. Savollar va javoblarini tuz. OZBEKCHA yoz.", "darsreja": "Sen tajribali oquvchisan. Batafsil dars rejasi tuz. OZBEKCHA yoz.", "xat": "Sen sinf rahbarisisan. Ota-onalarga rasmiy xat yoz. OZBEKCHA yoz.", "tavsif": "Sen maktab mamuryatisan. Rasmiy tavsifnoma yoz. OZBEKCHA yoz.", "tahlil": "Sen metodistsan. Darsni tolik tahlil qil. OZBEKCHA yoz.", "attestatsiya": "Sen attestatsiya mutaxasssissan. Attestatsiya savollari tuz. OZBEKCHA yoz.", "reklama": "Sen professional kopiraytersan. Jozibali reklama matni yoz. OZBEKCHA yoz.", "biznes": "Sen biznes maslahatchisan. Batafsil biznes-reja tuz. OZBEKCHA yoz.", "mahsulot": "Sen marketing mutaxasssissan. Jozibali tavsif yoz. OZBEKCHA yoz.", "email": "Sen professional email yozuvchisan. Rasmiy email yoz. OZBEKCHA yoz.", "rasm": "Rasmni batafsil tasvirla. OZBEKCHA yoz.", "savol": "Sen aqlli yordamchisan. Savolga tolik va aniq javob ber. OZBEKCHA yoz."},
     "ru": {"referat": "Ты специалист по написанию рефератов. Напиши полный качественный реферат. Отвечай НА РУССКОМ.", "rezyume": "Ты профессиональный составитель резюме. Создай красивое резюме. Отвечай НА РУССКОМ.", "intervyu": "Ты специалист по подготовке к интервью. Напиши вопросы и ответы. Отвечай НА РУССКОМ.", "ariza": "Ты специалист по деловым документам. Напиши официальное заявление. Отвечай НА РУССКОМ.", "diplom": "Ты специалист по дипломным работам. Помоги с дипломной работой. Отвечай НА РУССКОМ.", "tushuntir": "Ты опытный учитель. Объясни тему просто и понятно. Отвечай НА РУССКОМ.", "testsavol": "Ты составитель тестов. Создай 10 вопросов с 4 вариантами ответов. Отвечай НА РУССКОМ.", "tarjima": "Ты профессиональный переводчик. Переведи текст точно.", "texkarta": "Ты опытный учитель. Составь полную технологическую карту. Отвечай НА РУССКОМ.", "test": "Ты составитель тестов. Создай вопросы с ответами. Отвечай НА РУССКОМ.", "darsreja": "Ты опытный учитель. Составь подробный план урока. Отвечай НА РУССКОМ.", "xat": "Ты классный руководитель. Напиши официальное письмо родителям. Отвечай НА РУССКОМ.", "tavsif": "Ты администратор школы. Напиши официальную характеристику. Отвечай НА РУССКОМ.", "tahlil": "Ты методист. Сделай полный анализ урока. Отвечай НА РУССКОМ.", "attestatsiya": "Ты специалист по аттестации. Составь вопросы для аттестации. Отвечай НА РУССКОМ.", "reklama": "Ты профессиональный копирайтер. Напиши привлекательный рекламный текст. Отвечай НА РУССКОМ.", "biznes": "Ты бизнес-консультант. Составь подробный бизнес-план. Отвечай НА РУССКОМ.", "mahsulot": "Ты маркетолог. Напиши привлекательное описание. Отвечай НА РУССКОМ.", "email": "Ты профессиональный составитель писем. Напиши официальное письмо. Отвечай НА РУССКОМ.", "rasm": "Опиши картинку подробно. Отвечай НА РУССКОМ.", "savol": "Ты умный помощник. Ответь на вопрос полно и точно. Отвечай НА РУССКОМ."},
-    "en": {"referat": "You are an essay writing specialist. Write a complete quality essay. Answer IN ENGLISH.", "rezyume": "You are a professional resume writer. Create a beautiful resume. Answer IN ENGLISH.", "intervyu": "You are an interview preparation specialist. Write questions and answers. Answer IN ENGLISH.", "ariza": "You are a business document specialist. Write an official application. Answer IN ENGLISH.", "diplom": "You are a diploma work specialist. Help with diploma work. Answer IN ENGLISH.", "tushuntir": "You are an experienced teacher. Explain the topic simply. Answer IN ENGLISH.", "testsavol": "You are a test maker. Create 10 questions with 4 answer options. Answer IN ENGLISH.", "tarjima": "You are a professional translator. Translate the text accurately.", "texkarta": "You are an experienced teacher. Create a complete technology map. Answer IN ENGLISH.", "test": "You are a test maker. Create questions with answers. Answer IN ENGLISH.", "darsreja": "You are an experienced teacher. Create a detailed lesson plan. Answer IN ENGLISH.", "xat": "You are a class teacher. Write an official letter to parents. Answer IN ENGLISH.", "tavsif": "You are a school administrator. Write an official reference letter. Answer IN ENGLISH.", "tahlil": "You are a methodologist. Do a complete lesson analysis. Answer IN ENGLISH.", "attestatsiya": "You are an attestation specialist. Create attestation questions. Answer IN ENGLISH.", "reklama": "You are a professional copywriter. Write attractive ad text. Answer IN ENGLISH.", "biznes": "You are a business consultant. Create a detailed business plan. Answer IN ENGLISH.", "mahsulot": "You are a marketing specialist. Write an attractive description. Answer IN ENGLISH.", "email": "You are a professional email writer. Write an official email. Answer IN ENGLISH.", "rasm": "Describe the image in detail. Answer IN ENGLISH.", "savol": "You are a smart assistant. Answer the question fully and accurately. Answer IN ENGLISH."}
-}
-
-@app.route("/", methods=["POST"])
-def webhook():
-    d = request.json
-    if not d:
-        return "ok"
-    if "callback_query" in d:
-        cb = d["callback_query"]
-        chat_id = cb["message"]["chat"]["id"]
-        user_id = cb["from"]["id"]
-        ism = cb["from"].get("first_name", "Foydalanuvchi")
-        data = cb["data"]
-        lang = user_lang.get(user_id, "uz")
-        answer_cb(cb["id"])
-
-        if not check_obuna(user_id) and data != "tekshir":
-            send(chat_id, "Botdan foydalanish uchun kanalga obuna boling!", [[{"text": "Kanalga otish", "url": f"https://t.me/{CHANNEL[1:]}"},{"text": "Obuna boldim", "callback_data": "tekshir"}]])
-            return "ok"
-
-        if data == "tekshir":
-            if check_obuna(user_id):
-                til_menyusi(chat_id)
-            else:
-                send(chat_id, "Siz hali obuna bolmadingiz!", [[{"text": "Kanalga otish", "url": f"https://t.me/{CHANNEL[1:]}"},{"text": "Obuna boldim", "callback_data": "tekshir"}]])
-            return "ok"
-
-        if data == "til_uz":
-            user_lang[user_id] = "uz"
-            bosh_menyu(chat_id, "uz")
-            return "ok"
-        if data == "til_ru":
-            user_lang[user_id] = "ru"
-            bosh_menyu(chat_id, "ru")
-            return "ok"
-        if data == "til_en":
-            user_lang[user_id] = "en"
-            bosh_menyu(chat_id, "en")
-            return "ok"
-        if data == "start":
-            bosh_menyu(chat_id, lang)
-            return "ok"
-        if data == "talaba":
-            save_user(user_id, ism, "Talaba")
-            talaba_menu(chat_id, lang)
-            return "ok"
-        if data == "oquvchi":
-            save_user(user_id, ism, "Oquvchi")
-            oquvchi_menu(chat_id, lang)
-            return "ok"
-        if data == "ofis":
-            save_user(user_id, ism, "Ofis")
-            ofis_menu(chat_id, lang)
-            return "ok"
-        if data == "hamma":
-            save_user(user_id, ism, "Hamma")
-            hamma_menu(chat_id, lang)
-            return "ok"
-
-        if data.startswith("s_"):
-            xizmat = data[2:]
-            user_xizmat[user_id] = xizmat
-            savol = SAVOLLAR.get(lang, SAVOLLAR["uz"]).get(xizmat, "Yozing:")
-            save_user(user_id, ism, "", xizmat)
-            talaba_xizmatlar = ["referat", "rezyume", "intervyu", "ariza", "diplom", "tushuntir", "testsavol"]
-            oquvchi_xizmatlar = ["texkarta", "test", "darsreja", "xat", "tavsif", "tahlil", "attestatsiya"]
-            ofis_xizmatlar = ["reklama", "biznes", "mahsulot", "email"]
-            if xizmat in talaba_xizmatlar:
-                qayerga = "talaba"
-            elif xizmat in oquvchi_xizmatlar:
-                qayerga = "oquvchi"
-            elif xizmat in ofis_xizmatlar:
-                qayerga = "ofis"
-            else:
-                qayerga = "hamma"
-            send(chat_id, savol, ortga_kb(lang, qayerga))
-            return "ok"
-
-        return "ok"
-
-    if "message" not in d:
-        return "ok"
-
-    chat_id = d["message"]["chat"]["id"]
-    user_id = d["message"]["from"]["id"]
-    ism = d["message"]["from"].get("first_name", "Foydalanuvchi")
-    text = d["message"].get("text", "")
-    lang = user_lang.get(user_id, "uz")
-
-    if not check_obuna(user_id) and text != "/start":
-        send(chat_id, "Botdan foydalanish uchun kanalga obuna boling!", [[{"text": "Kanalga otish", "url": f"https://t.me/{CHANNEL[1:]}"},{"text": "Obuna boldim", "callback_data": "tekshir"}]])
-        return "ok"
-
-    if text == "/start":
-        save_user(user_id, ism)
-        til_menyusi(chat_id)
-    elif text == "/stats" and str(user_id) == ADMIN:
-        jami, bugungi, bolimlar = get_stats()
-        bolim_text = "\n".join([f"  • {b[0] or 'Noaniq'}: {b[1]} ta" for b in bolimlar])
-        send(chat_id,
-            f"📊 <b>Bot Statistikasi</b>\n\n"
-            f"👥 Jami foydalanuvchilar: <b>{jami}</b>\n"
-            f"🆕 Bugun qo'shilganlar: <b>{bugungi}</b>\n\n"
-            f"📂 Bo'limlar bo'yicha:\n{bolim_text}"
-            ) 
-   elif text.startswith("/broadcast ") and str(user_id) == ADMIN:
-    xabar = text[11:]
-    conn = psycopg2.connect(DATABASE_URL)
-    c = conn.cursor()
-    c.execute("SELECT user_id FROM users")
-    users = c.fetchall()
-    conn.close()
-    yuborildi = 0
-    xato = 0
-    for u in users:
-        try:
-            send(int(u[0]), xabar)
-            yuborildi += 1
-        except:
-            xato += 1
-    send(chat_id, f"✅ {yuborildi} ta foydalanuvchiga yuborildi!\n❌ {xato} ta xato!")
-    elif text.startswith("/reklama ") and str(user_id) == ADMIN:
-        send(chat_id, "Reklama yuborilmoqda...")
-    else:
-        xizmat = user_xizmat.get(user_id, "savol")
-        if xizmat == "rasm":
-            clean = text.replace(" ", "%20").replace("\n", "")
-            url = f"https://image.pollinations.ai/prompt/{clean}?width=512&height=512&nologo=true"
-            requests.post(f"https://api.telegram.org/bot{TOKEN}/sendPhoto", 
-                json={"chat_id": chat_id, "photo": url, "caption": "Rasm tayyor!"}, timeout=30)
-            menyu_text = {"uz": "Bosh menyu", "ru": "Glavnoe menyu", "en": "Main menu"}.get(lang, "Bosh menyu")
-            send(chat_id, "Yana rasm yaratish uchun tavsif yozing!", [[{"text": menyu_text, "callback_data": "start"}]])
-        else:
-            role = ROLLAR.get(lang, ROLLAR["uz"]).get(xizmat, "Sen aqlli yordamchisan.")
-            try:
-                javob = ask(text, role)
-            except:
-                javob = "Xatolik yuz berdi. Qayta urinib ko'ring."
-            menyu_text = {"uz": "Bosh menyu", "ru": "Glavnoe menyu", "en": "Main menu"}.get(lang, "Bosh menyu")
-            send(chat_id, javob, [[{"text": menyu_text, "callback_data": "start"}]])
-    return "ok"
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    "en": {"referat": "You are an essay writing specialist. Write a complete quality essay. Answer IN ENGLISH.", "rezyume": "You are a professional resume writer. Create a beautiful resume. Answer IN ENGLISH.", "intervyu": "You are an interview preparation specialist. Write questions and answers. Answer IN ENGLISH.", "ariza": "You are a business document specialist. Write an official application. Answer IN ENGLISH.", "diplom": "You are a diploma work specialist. Help with diploma work. Answer IN ENGLISH.", "tushuntir": "You are an experienced teacher. Explain the topic simply. Answer IN ENGLISH.", "testsavol": "You are a test maker. Create 10 questions with 4 answer options. Answer IN ENGLISH.", "tarjima": "You are a professional translator. Translate the text accurately.", "texkarta": "You are an experienced teacher. Create a complete technology map. Answer IN ENGLISH.", "test": "You are a test maker. Create questions with answers. Answer IN ENGLISH.", "darsreja": "You are an experienced teacher. Create a detailed lesson plan. Answer IN ENGLISH.", "xat": "You are a class teacher. Write an official letter to parents. Answer IN ENGLISH.", "tavsif": "You are a school administrator. Write an official reference letter. Answer IN ENGLISH.", "tahlil": "You are a methodologist. Do a complete lesson analysis. Answer IN ENGLISH.", "attestatsiya": "You are an attestation specialist. Create attestation questions. Answer IN ENGLISH.", "reklama": "You are a professional copywriter. Write attractive ad text. Answer IN ENGLISH.", "biznes": "You are a business consultant. Create a detailed business plan. Answer IN ENGLISH.", "mahsulot": "You are a marketing specialist. Write an attractive description. Answer IN ENGLISH.", "email": "You are a professional email writer. Write an official email. Answer IN ENGLISH.", "rasm": "Describe the image in detail. Answer IN ENGLISH.", "savol"
