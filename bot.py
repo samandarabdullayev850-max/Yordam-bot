@@ -4,7 +4,7 @@ from flask import Flask, request
 from datetime import datetime
 import psycopg2
 
-TOKEN = "8381516564:AAFz0fohy1q7R7QNTKyfTC8tA9GXydzJ3yU"
+TOKEN = "8381516564:AAEjCX21alMPU6uE4moF1TBouASlpY0d8nM"
 DATABASE_URL = os.environ.get("DATABASE_URL")
 GROQ = "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"
 ADMIN = "8726418671"
