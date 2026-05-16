@@ -59,7 +59,6 @@ def ask(text, role):
             json={"chat_id": ADMIN, "text": f"⚠️ GROQ API xato!\n\n{str(e)}\n\nKalitni almashtiring!"})
         return "Xatolik yuz berdi. Qayta urinib ko'ring."
 def get_stats():
-def get_stats():
     conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     c.execute("SELECT COUNT(*) FROM users")
