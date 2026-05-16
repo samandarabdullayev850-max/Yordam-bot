@@ -34,7 +34,6 @@ def init_db():
 init_db()
 
 def save_user(user_id, ism, bolim="", xizmat=""):
-def save_user(user_id, ism, bolim="", xizmat=""):
     conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     sana = datetime.now().strftime("%Y-%m-%d")
